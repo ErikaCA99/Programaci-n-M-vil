@@ -35,9 +35,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#101010',
     },
     text: {
-        color: 'black',
+        color: '#ffff',
         fontWeight: 'bold',
         fontSize: 30,
     },
@@ -52,11 +53,13 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        borderColor: 'gray',
+        borderColor: '#ffff', // Color del borde
         borderWidth: 1,
         marginBottom: 10,
         width: '80%',
         paddingHorizontal: 10,
+        color: '#ffffff', // Color del texto dentro del input
+        backgroundColor: '#ffff', // Color de fondo del input
     },
     btn: {
         width: '65%', // Ajustado para que sea más responsivo

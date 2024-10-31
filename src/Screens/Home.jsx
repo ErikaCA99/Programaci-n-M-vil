@@ -6,7 +6,7 @@ export default function Home({ navigation }) {
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.welcomeText}>Bienvenido</Text>
-                <Text style={styles.username}>Rupak Chakraborty</Text>
+                <Text style={styles.username}>Andru </Text>
                 <View style={styles.profilePic} />
             </View>
 

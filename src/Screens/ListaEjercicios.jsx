@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { getExercisesByBodyPart } from '../services/exerciseApi';
+import { getExercisesByBodyPart } from '../services/ExerciseAPI';
 
 const ExerciseResults = ({ route }) => {
     const { bodyPart } = route.params;

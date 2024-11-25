@@ -1,14 +1,12 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import FiltroEjercicio from '../Screens/FiltroEjercicio';
-import ExerciseResults from '../Screens/ExerciseResults';
+import BarraDeNavegacion from './BarraDeNavegacion'; // Importa la barra de navegación
 
 const Stack = createStackNavigator();
 
 const AppNavigation = () => (
-    <Stack.Navigator>
-        <Stack.Screen name="FiltroEjercicio" component={FiltroEjercicio} />
-        <Stack.Screen name="ExerciseResults" component={ExerciseResults} />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Main" component={BarraDeNavegacion} />
     </Stack.Navigator>
 );
 

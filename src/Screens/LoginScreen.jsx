@@ -20,7 +20,7 @@ function LoginScreen({ navigation }) {
             />
             <TouchableOpacity 
                 style={styles.btn} 
-                onPress={() => navigation.navigate('Home')}
+                onPress={() => navigation.navigate('Welcome')} // Cambiado para navegar a Welcome
             >
                 <Text style={styles.btnText}>Log in</Text>
             </TouchableOpacity>
@@ -45,21 +45,17 @@ const styles = StyleSheet.create({
     logo: {
         width: 130,
         height: 130,
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: 20,
-        marginBottom: 20,
+        marginBottom: 20,      
     },
     input: {
         height: 40,
         borderColor: '#ffff', // Color del borde
         borderWidth: 1,
-        borderRadius:6,
+        borderRadius: 6,
         marginBottom: 10,
         width: '80%',
         paddingHorizontal: 10,
-        color: '#ffffff', // Color del texto dentro del input
+        color: '#101010', // Cambiado a negro para el texto dentro del input
         backgroundColor: '#ffff', // Color de fondo del input
     },
     btn: {

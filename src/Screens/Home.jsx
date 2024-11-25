@@ -1,149 +1,194 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, Video, StyleSheet, ScrollView, TextInput, FlatList } from 'react-native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { debounce } from 'lodash'; // Asegúrate de tener lodash instalado
 
-export default function Home({ navigation }) {
+const SERVER_URL = 'http://localhost:3000/scrape';
+
+const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
+const HomeScreen = () => {
+    const [mediaData, setMediaData] = useState([]);
+    const [search, setSearch] = useState('');
+    const [filteredData, setFilteredData] = useState([]);
+
+    // Fetch de los datos al cargar el componente
+    useEffect(() => {
+        fetchMedia();
+    }, []);
+
+    // Filtrar los ejercicios cuando cambia la búsqueda
+    useEffect(() => {
+        filterExercises();
+    }, [search]);
+
+    // Función para obtener los datos de los ejercicios
+    const fetchMedia = async () => {
+        try {
+            const response = await fetch(SERVER_URL);
+            const result = await response.json();
+            if (result.success) {
+                setMediaData(result.data);
+                setFilteredData(result.data); // Inicializar con todos los ejercicios
+            }
+        } catch (error) {
+            console.error('Error fetching media:', error);
+        }
+    };
+
+    // Función para filtrar los ejercicios
+    const filterExercises = () => {
+        if (search.trim() === '') {
+            setFilteredData(mediaData); // Si no hay búsqueda, mostrar todos los ejercicios
+        } else {
+            const filtered = mediaData.filter(exercise =>
+                exercise.name.toLowerCase().includes(search.toLowerCase()) // Filtrar por nombre
+            );
+            setFilteredData(filtered);
+        }
+    };
+
+    // Función de búsqueda con debounce
+    const debouncedSearch = debounce((value) => {
+        setSearch(value);
+    }, 500); // Ajusta el tiempo de debounce si es necesario
+
+    const handleSearchChange = (text) => {
+        debouncedSearch(text); // Usar la búsqueda con debounce
+    };
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.welcomeText}>Bienvenido</Text>
-                <Text style={styles.username}>Andru </Text>
-                <View style={styles.profilePic} />
-            </View>
-
-            <View style={styles.slider}>
-                <Text style={styles.sliderText}>Progreso</Text>
-            </View>
-
-            <Text style={styles.categoryTitle}>Categorías según el grupo muscular</Text>
-            <View style={styles.categories}>
-                <TouchableOpacity style={styles.categoryBox}>
-                    <Text style={styles.categoryText}>Cuerpo completo</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.categoryBox}>
-                    <Text style={styles.categoryText}>Espalda</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.categoryBox}>
-                    <Text style={styles.categoryText}>Piernas</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.categoryBox}>
-                    <Text style={styles.categoryText}>Brazos</Text>
-                </TouchableOpacity>
-            </View>
-
-            <Text style={styles.workoutsTitle}>Rutinas Disponibles</Text>
-            <View style={styles.workouts}>
-                <TouchableOpacity style={styles.workoutBox}>
-                    <Text style={styles.workoutText}>Workout 1</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.workoutBox}>
-                    <Text style={styles.workoutText}>Workout 2</Text>
-                </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>Añadir Nueva Rutina</Text>
-            </TouchableOpacity>
+        <ScrollView style={styles.container}>
+            <Text style={styles.greeting}>Buenos días 🔥</Text>
+            <TextInput
+                style={styles.searchInput}
+                placeholder="Buscar ejercicio"
+                value={search}
+                onChangeText={handleSearchChange} // Usar la función debounced
+            />
+            <Text style={styles.sectionTitle}>Media</Text>
+            {/* Lista de ejercicios filtrados */}
+            <FlatList
+                data={filteredData}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.mediaCard}>
+                        {item.type === 'image' && (
+                            <Image source={{ uri: item.src }} style={styles.mediaImage} />
+                        )}
+                        {item.type === 'video' && (
+                            <Video
+                                source={{ uri: item.src }}
+                                style={styles.mediaVideo}
+                                useNativeControls
+                                resizeMode="contain"
+                            />
+                        )}
+                    </View>
+                )}
+                ListEmptyComponent={<Text>No hay ejercicios que coincidan con la búsqueda.</Text>} // Mensaje cuando no hay resultados
+            />
+            <Text style={styles.sectionTitle}>Entrenamientos populares</Text>
+            <ScrollView horizontal>
+                {mediaData.map((item, index) => (
+                    <View key={index} style={styles.mediaCard}>
+                        {item.type === 'image' && (
+                            <Image source={{ uri: item.src }} style={styles.mediaImage} />
+                        )}
+                        {item.type === 'video' && (
+                            <Video
+                                source={{ uri: item.src }}
+                                style={styles.mediaVideo}
+                                useNativeControls
+                                resizeMode="contain"
+                            />
+                        )}
+                    </View>
+                ))}
+            </ScrollView>
+            <Text style={styles.sectionTitle}>Plan diario</Text>
+            {/* Agregar contenido adicional del plan diario */}
         </ScrollView>
     );
-}
+};
+
+// Pantalla del menú del Drawer
+const MenuScreen = () => (
+    <View style={styles.menuContainer}>
+        <Text>Menu</Text>
+        <Text>Option 1</Text>
+        <Text>Option 2</Text>
+        <Text>Option 3</Text>
+    </View>
+);
+
+const Home = () => {
+    return (
+        <NavigationContainer>
+            <Drawer.Navigator initialRouteName="HomeScreen">
+                <Drawer.Screen name="HomeScreen" component={HomeScreen} />
+                <Drawer.Screen name="Menu" component={MenuScreen} />
+            </Drawer.Navigator>
+        </NavigationContainer>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
-        flexGrow: 1,
-        padding:20,
-        backgroundColor: '#101010',
-        marginTop: 40,
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#fff',
     },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    welcomeText: {
-        color: '#fff',
-        fontSize: 20,
+    greeting: {
+        fontSize: 24,
         fontWeight: 'bold',
     },
-    username: {
-        color: '#B4FF00',
+    searchInput: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 10,
+        padding: 10,
+        marginVertical: 20,
+    },
+    sectionTitle: {
         fontSize: 18,
-        marginLeft: 5,
+        fontWeight: 'bold',
+        marginVertical: 10,
     },
-    profilePic: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#333',
-        marginLeft: 'auto',
+    card: {
+        marginVertical: 10,
+        padding: 10,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 10,
     },
-    slider: {
+    exerciseName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    mediaCard: {
+        marginRight: 10,
+        borderRadius: 10,
+        overflow: 'hidden',
+        width: 150,
         height: 150,
-        backgroundColor: '#282828',
-        borderRadius: 10,
+        backgroundColor: '#eee',
+    },
+    mediaImage: {
+        width: '100%',
+        height: '100%',
+    },
+    mediaVideo: {
+        width: '100%',
+        height: '100%',
+    },
+    menuContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
-    },
-    sliderText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    categoryTitle: {
-        color: '#fff',
-        fontSize: 18,
-        marginBottom: 10,
-    },
-    categories: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 20,
-    },
-    categoryBox: {
-        width: '23%',
-        height: 60,
-        borderRadius: 10,
-        backgroundColor: '#444',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    categoryText: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    workoutsTitle: {
-        color: '#fff',
-        fontSize: 18,
-        marginBottom: 10,
-    },
-    workouts: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 20,
-    },
-    workoutBox: {
-        width: '48%',
-        height: 100,
-        borderRadius: 10,
-        backgroundColor: '#5D6D7E',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    workoutText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    addButton: {
-        backgroundColor: '#B4FF00',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    addButtonText: {
-        color: '#000',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });
+
+export default Home;

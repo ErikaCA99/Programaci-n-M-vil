@@ -1,193 +1,180 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Video, StyleSheet, ScrollView, TextInput, FlatList } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
-import { debounce } from 'lodash'; // Asegúrate de tener lodash instalado
-
-const SERVER_URL = 'http://localhost:3000/scrape';
-
-const Tab = createBottomTabNavigator();
-const Drawer = createDrawerNavigator();
-
-const HomeScreen = () => {
-    const [mediaData, setMediaData] = useState([]);
-    const [search, setSearch] = useState('');
-    const [filteredData, setFilteredData] = useState([]);
-
-    // Fetch de los datos al cargar el componente
-    useEffect(() => {
-        fetchMedia();
-    }, []);
-
-    // Filtrar los ejercicios cuando cambia la búsqueda
-    useEffect(() => {
-        filterExercises();
-    }, [search]);
-
-    // Función para obtener los datos de los ejercicios
-    const fetchMedia = async () => {
-        try {
-            const response = await fetch(SERVER_URL);
-            const result = await response.json();
-            if (result.success) {
-                setMediaData(result.data);
-                setFilteredData(result.data); // Inicializar con todos los ejercicios
-            }
-        } catch (error) {
-            console.error('Error fetching media:', error);
-        }
-    };
-
-    // Función para filtrar los ejercicios
-    const filterExercises = () => {
-        if (search.trim() === '') {
-            setFilteredData(mediaData); // Si no hay búsqueda, mostrar todos los ejercicios
-        } else {
-            const filtered = mediaData.filter(exercise =>
-                exercise.name.toLowerCase().includes(search.toLowerCase()) // Filtrar por nombre
-            );
-            setFilteredData(filtered);
-        }
-    };
-
-    // Función de búsqueda con debounce
-    const debouncedSearch = debounce((value) => {
-        setSearch(value);
-    }, 500); // Ajusta el tiempo de debounce si es necesario
-
-    const handleSearchChange = (text) => {
-        debouncedSearch(text); // Usar la búsqueda con debounce
-    };
-
-    return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.greeting}>Buenos días 🔥</Text>
-            <TextInput
-                style={styles.searchInput}
-                placeholder="Buscar ejercicio"
-                value={search}
-                onChangeText={handleSearchChange} // Usar la función debounced
-            />
-            <Text style={styles.sectionTitle}>Media</Text>
-            {/* Lista de ejercicios filtrados */}
-            <FlatList
-                data={filteredData}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <View style={styles.mediaCard}>
-                        {item.type === 'image' && (
-                            <Image source={{ uri: item.src }} style={styles.mediaImage} />
-                        )}
-                        {item.type === 'video' && (
-                            <Video
-                                source={{ uri: item.src }}
-                                style={styles.mediaVideo}
-                                useNativeControls
-                                resizeMode="contain"
-                            />
-                        )}
-                    </View>
-                )}
-                ListEmptyComponent={<Text>No hay ejercicios que coincidan con la búsqueda.</Text>} // Mensaje cuando no hay resultados
-            />
-            <Text style={styles.sectionTitle}>Entrenamientos populares</Text>
-            <ScrollView horizontal>
-                {mediaData.map((item, index) => (
-                    <View key={index} style={styles.mediaCard}>
-                        {item.type === 'image' && (
-                            <Image source={{ uri: item.src }} style={styles.mediaImage} />
-                        )}
-                        {item.type === 'video' && (
-                            <Video
-                                source={{ uri: item.src }}
-                                style={styles.mediaVideo}
-                                useNativeControls
-                                resizeMode="contain"
-                            />
-                        )}
-                    </View>
-                ))}
-            </ScrollView>
-            <Text style={styles.sectionTitle}>Plan diario</Text>
-            {/* Agregar contenido adicional del plan diario */}
-        </ScrollView>
-    );
-};
-
-// Pantalla del menú del Drawer
-const MenuScreen = () => (
-    <View style={styles.menuContainer}>
-        <Text>Menu</Text>
-        <Text>Option 1</Text>
-        <Text>Option 2</Text>
-        <Text>Option 3</Text>
-    </View>
-);
+import React from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    Image,
+    StyleSheet,
+    TouchableOpacity,
+    ScrollView,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const Home = () => {
     return (
-        <NavigationContainer>
-            <Drawer.Navigator initialRouteName="HomeScreen">
-                <Drawer.Screen name="HomeScreen" component={HomeScreen} />
-                <Drawer.Screen name="Menu" component={MenuScreen} />
-            </Drawer.Navigator>
-        </NavigationContainer>
+        <ScrollView style={styles.container}>
+            {/* Encabezado */}
+            <View style={styles.header}>
+                <View>
+                    <Text style={styles.greeting}>Hello, Mike</Text>
+                    <Text style={styles.title}>Let's Workout</Text>
+                </View>
+                <Image
+                    source={{ uri: 'https://via.placeholder.com/50' }} // Imagen de usuario
+                    style={styles.profileImage}
+                />
+            </View>
+
+            {/* Barra de búsqueda */}
+            <TextInput
+                style={styles.searchBar}
+                placeholder="Search Your Plan"
+                placeholderTextColor="#888"
+            />
+
+            {/* Resultados de la última semana */}
+            <View style={styles.lastWeekResults}>
+                <TouchableOpacity style={styles.resultCard}>
+                    <Ionicons name="flame" size={24} color="red" />
+                    <Text style={styles.resultValue}>2503</Text>
+                    <Text style={styles.resultLabel}>Cal</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.resultCard}>
+                    <Ionicons name="time" size={24} color="green" />
+                    <Text style={styles.resultValue}>24h</Text>
+                    <Text style={styles.resultLabel}>34m</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.resultCard}>
+                    <Ionicons name="barbell" size={24} color="orange" />
+                    <Text style={styles.resultValue}>1450</Text>
+                    <Text style={styles.resultLabel}>Kg</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* Tu plan */}
+            <Text style={styles.sectionTitle}>Tu Plan</Text>
+            <View style={styles.planContainer}>
+                <TouchableOpacity style={styles.planCard}>
+                    <Image
+                        source={{ uri: 'https://via.placeholder.com/150' }}
+                        style={styles.planImage}
+                    />
+                    <Text style={styles.planText}>Chest & Triceps</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.planCard}>
+                    <Image
+                        source={{ uri: 'https://via.placeholder.com/150' }}
+                        style={styles.planImage}
+                    />
+                    <Text style={styles.planText}>Back & Biceps</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* Seleccionar plan */}
+            <View style={styles.selectPlanContainer}>
+                <TouchableOpacity style={styles.selectButton}>
+                    <Text>Cardio</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.selectButton}>
+                    <Text>Yoga</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.selectButton}>
+                    <Text>HIIT</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#f9f9f9',
         padding: 20,
-        backgroundColor: '#fff',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
     },
     greeting: {
+        fontSize: 16,
+        color: '#555',
+    },
+    title: {
         fontSize: 24,
         fontWeight: 'bold',
     },
-    searchInput: {
-        borderWidth: 1,
-        borderColor: '#ccc',
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+    },
+    searchBar: {
+        backgroundColor: '#e0e0e0',
         borderRadius: 10,
         padding: 10,
-        marginVertical: 20,
+        marginBottom: 20,
+    },
+    lastWeekResults: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    resultCard: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 15,
+        width: '30%',
+        elevation: 2,
+    },
+    resultValue: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginVertical: 5,
+    },
+    resultLabel: {
+        color: '#888',
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginVertical: 10,
+        marginBottom: 10,
     },
-    card: {
-        marginVertical: 10,
-        padding: 10,
-        backgroundColor: '#f0f0f0',
-        borderRadius: 10,
+    planContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
     },
-    exerciseName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    mediaCard: {
-        marginRight: 10,
+    planCard: {
+        backgroundColor: '#fff',
         borderRadius: 10,
         overflow: 'hidden',
-        width: 150,
-        height: 150,
-        backgroundColor: '#eee',
+        width: '48%',
+        elevation: 2,
     },
-    mediaImage: {
+    planImage: {
         width: '100%',
-        height: '100%',
+        height: 100,
     },
-    mediaVideo: {
-        width: '100%',
-        height: '100%',
+    planText: {
+        padding: 10,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
-    menuContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+    selectPlanContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 20,
+    },
+    selectButton: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 10,
+        elevation: 2,
     },
 });
 

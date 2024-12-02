@@ -15,7 +15,7 @@ const Welcome = () => {
             <Text style={styles.subtitle}>There is no instant way to a healthy life</Text>
             <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate('Home')}
+                onPress={() => navigation.navigate('Principal')}
             >
                 <Text style={styles.buttonText}>Empezar</Text>
             </TouchableOpacity>

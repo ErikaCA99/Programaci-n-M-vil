@@ -36,3 +36,6 @@ yarn-error.*
 
 #info google - firebase
 google-services.json
+
+#info firebase
+firebaseConfig.js

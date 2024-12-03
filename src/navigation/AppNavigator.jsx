@@ -6,6 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Importar las pantallas
 import Welcome from '../Screens/Welcome'; // Nueva pantalla de bienvenida
+//Pantalla de registro
+import SeleccionDeGenero from '../Screens/RegistroDeGenero';
+import SeleccionDeObjetivo from '../Screens/SeleccionObjetivo';
+import RegistroInformacionUsuario from '../Screens/RegistroInformacionUsuario';
 import Home from '../Screens/Home';
 import Estadisticas from '../Screens/Estadisticas';
 import Horarios from '../Screens/Horarios';
@@ -59,6 +63,10 @@ const AppNavigation = () => {
             <Stack.Navigator initialRouteName="Bienvenida" screenOptions={{ headerShown: false }}>
                 {/* Pantalla de bienvenida */}
                 <Stack.Screen name="Bienvenida" component={Welcome} />
+                {/* Flujo de registro */}
+                <Stack.Screen name="SeleccionGenero" component={SeleccionDeGenero} />
+                <Stack.Screen name="SeleccionObjetivo" component={SeleccionDeObjetivo} />
+                <Stack.Screen name="InformacionPersonal" component={RegistroInformacionUsuario} />
                 {/* Navegación principal */}
                 <Stack.Screen name="Principal" component={TabNavigation} />
             </Stack.Navigator>

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import { db } from '../../firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const InformacionPersonal = ({ navigation, route }) => {
     const [age, setAge] = useState('');
@@ -10,21 +11,31 @@ const InformacionPersonal = ({ navigation, route }) => {
     const [height, setHeight] = useState('');
     const [unit, setUnit] = useState('metric'); // 'metric' or 'imperial'
 
+    // Guardar datos en Firestore
     const handleSave = async () => {
         if (age && weight && height) {
+            const auth = getAuth();
+            const userId = auth.currentUser?.uid; // Obtener el UID del usuario autenticado
+
+            if (!userId) {
+                Alert.alert('Error', 'No se pudo obtener el usuario autenticado.');
+                return;
+            }
+
             const userData = {
-                gender: route.params.gender,
-                objective: route.params.objective,
+                gender: route.params.gender || 'N/A',
+                objective: route.params.objective || 'N/A',
                 age,
                 weight: `${weight} ${unit === 'metric' ? 'kg' : 'lbs'}`,
                 height: `${height} ${unit === 'metric' ? 'm' : 'ft'}`,
             };
 
             try {
-                const userRef = doc(db, 'users', 'user-id'); // Reemplaza 'user-id' por el ID del usuario
+                const userRef = doc(db, 'users', userId);
                 await setDoc(userRef, userData);
-                Alert.alert('Éxito', 'Datos guardados exitosamente.');
-                navigation.navigate('Home'); // Redirige al Home
+                Alert.alert('Éxito', 'Datos guardados exitosamente.', [
+                    { text: 'OK', onPress: () => navigation.navigate('Home') },
+                ]);
             } catch (error) {
                 console.error('Error al guardar datos:', error);
                 Alert.alert('Error', 'Hubo un error al guardar tus datos. Intenta nuevamente.');
@@ -38,6 +49,7 @@ const InformacionPersonal = ({ navigation, route }) => {
         <View style={styles.container}>
             <Text style={styles.title}>Cuéntanos un poco de ti</Text>
             <View style={styles.switchContainer}>
+                {/* Botón para seleccionar Métrico */}
                 <TouchableOpacity
                     style={[styles.switchButton, unit === 'metric' && styles.selected]}
                     onPress={() => setUnit('metric')}
@@ -52,6 +64,8 @@ const InformacionPersonal = ({ navigation, route }) => {
                         Métrico (kg, m)
                     </Text>
                 </TouchableOpacity>
+
+                {/* Botón para seleccionar Imperial */}
                 <TouchableOpacity
                     style={[styles.switchButton, unit === 'imperial' && styles.selected]}
                     onPress={() => setUnit('imperial')}
@@ -67,6 +81,8 @@ const InformacionPersonal = ({ navigation, route }) => {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            {/* Campo de texto para la edad */}
             <TextInput
                 style={styles.input}
                 placeholder="Edad"
@@ -74,6 +90,8 @@ const InformacionPersonal = ({ navigation, route }) => {
                 value={age}
                 onChangeText={setAge}
             />
+
+            {/* Campo de texto para el peso */}
             <TextInput
                 style={styles.input}
                 placeholder={`Peso (${unit === 'metric' ? 'kg' : 'lbs'})`}
@@ -81,6 +99,8 @@ const InformacionPersonal = ({ navigation, route }) => {
                 value={weight}
                 onChangeText={setWeight}
             />
+
+            {/* Campo de texto para la altura */}
             <TextInput
                 style={styles.input}
                 placeholder={`Altura (${unit === 'metric' ? 'm' : 'ft'})`}
@@ -88,10 +108,12 @@ const InformacionPersonal = ({ navigation, route }) => {
                 value={height}
                 onChangeText={setHeight}
             />
+
+            {/* Botón para guardar */}
             <TouchableOpacity
                 style={[styles.saveButton, (!age || !weight || !height) && styles.disabledButton]}
-                onPress={() => navigation.navigate('Principal')}
-                disabled={!age || !weight || !height}
+                onPress={handleSave}
+                disabled={!age || !weight || !height} // Deshabilitar si faltan campos
             >
                 <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
                 <Text style={styles.saveButtonText}>Guardar</Text>
@@ -176,4 +198,3 @@ const styles = StyleSheet.create({
 });
 
 export default InformacionPersonal;
-

@@ -14,6 +14,8 @@ import Home from '../Screens/Home';
 import Estadisticas from '../Screens/Estadisticas';
 import Horarios from '../Screens/Horarios';
 import Perfil from '../Screens/Perfil';
+import LoginScreen from '../Screens/LoginScreen';
+import SeleccionDeAreas from '../Screens/SeleccionDeAreas';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -66,6 +68,7 @@ const AppNavigation = () => {
                 {/* Flujo de registro */}
                 <Stack.Screen name="SeleccionGenero" component={SeleccionDeGenero} />
                 <Stack.Screen name="SeleccionObjetivo" component={SeleccionDeObjetivo} />
+                <Stack.Screen name="SeleccionDeAreas" component={SeleccionDeAreas} />
                 <Stack.Screen name="InformacionPersonal" component={RegistroInformacionUsuario} />
                 {/* Navegación principal */}
                 <Stack.Screen name="Principal" component={TabNavigation} />

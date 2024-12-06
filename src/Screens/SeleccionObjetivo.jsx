@@ -54,7 +54,7 @@ const SeleccionDeObjetivo = ({ navigation, route }) => {
             </View>
             <TouchableOpacity
                 style={[styles.nextButton, !selectedObjective && styles.nextButtonDisabled]}
-                onPress={() => navigation.navigate('InformacionPersonal')}
+                onPress={() => navigation.navigate('SeleccionDeAreas')}
                 disabled={!selectedObjective}
             >
                 <Text style={styles.nextButtonText}>Siguiente</Text>

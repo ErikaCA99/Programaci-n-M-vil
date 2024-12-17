@@ -3,11 +3,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
-
+import ExerciseDetails from '../Screens/ExercisesDetails'; 
 // Importar las pantallas
 import Welcome from '../Screens/Welcome'; // Nueva pantalla de bienvenida
 import Home from '../Screens/Home';
-import Estadisticas from '../Screens/Estadisticas';
+import GuiaMaquinas from '../Screens/GuiaMaquinas';
 import Horarios from '../Screens/Horarios';
 import Perfil from '../Screens/Perfil';
 
@@ -25,8 +25,8 @@ const TabNavigation = () => {
                         case 'Inicio':
                             iconName = 'home-outline';
                             break;
-                        case 'Estadísticas':
-                            iconName = 'stats-chart-outline';
+                        case 'Guía de Maquinas':
+                            iconName = 'fitness-outline';
                             break;
                         case 'Horarios':
                             iconName = 'calendar-outline';
@@ -46,7 +46,7 @@ const TabNavigation = () => {
             })}
         >
             <Tab.Screen name="Inicio" component={Home} />
-            <Tab.Screen name="Estadísticas" component={Estadisticas} />
+            <Tab.Screen name="Guía de Maquinas" component={GuiaMaquinas} />
             <Tab.Screen name="Horarios" component={Horarios} />
             <Tab.Screen name="Perfil" component={Perfil} />
         </Tab.Navigator>
@@ -61,6 +61,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="Bienvenida" component={Welcome} />
                 {/* Navegación principal */}
                 <Stack.Screen name="Principal" component={TabNavigation} />
+                <Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />
             </Stack.Navigator>
         </NavigationContainer>
     );
